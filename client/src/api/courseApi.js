@@ -13,3 +13,20 @@ export const createCourse = async (course) => {
 
   return response.data;
 };
+
+export const updateCourse = async (id, courseData) => {
+  const response = await axios.put(
+    `/courses/${id}`,
+    courseData
+  );
+
+  return response.data;
+};
+
+export const deleteCourse = async (id) => {
+  const response = await axios.delete(
+    `/courses/${id}`
+  );
+
+  return response.data;
+};

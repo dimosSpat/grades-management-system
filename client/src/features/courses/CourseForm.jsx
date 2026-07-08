@@ -1,14 +1,17 @@
 import { useEffect, useState } from "react";
-
-import { createCourse } from "../../api/courseApi";
 import { getSemesters } from "../../api/semesterApi";
+import { createCourse, updateCourse } from "../../api/courseApi";
 
-function CourseForm({ onCourseCreated }) {
+function CourseForm({
+  onCourseCreated,
+  editingCourse,
+  setEditingCourse,
+  }) {
   const [formData, setFormData] = useState({
     code: "",
     name: "",
     credits: "",
-    status: "active",
+    status: "PLANNED",
     semesterId: "",
   });
 
@@ -26,7 +29,19 @@ function CourseForm({ onCourseCreated }) {
    } catch (error) {
      console.error("Failed to load semesters:", error);
     }
-  } 
+  }
+
+  useEffect(() => {
+  if (editingCourse) {
+    setFormData({
+      code: editingCourse.code,
+      name: editingCourse.name,
+      credits: editingCourse.credits,
+      semesterId: editingCourse.semesterId,
+      status: editingCourse.status,
+        });
+      }
+    }, [editingCourse]);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -39,7 +54,7 @@ function CourseForm({ onCourseCreated }) {
 
   async function handleSubmit(event) {
     event.preventDefault();
-
+    console.log(formData);
     if (
       !formData.code ||
       !formData.name ||
@@ -51,30 +66,40 @@ function CourseForm({ onCourseCreated }) {
     }
 
     try {
-      await createCourse({
-        ...formData,
-        credits: Number(formData.credits),
-        semesterId: Number(formData.semesterId),
-      });
+        const payload = {
+          ...formData,
+          credits: Number(formData.credits),
+          semesterId: Number(formData.semesterId),
+        };
 
-      setFormData({
-        code: "",
-        name: "",
-        credits: "",
-        status: "active",
-        semesterId: "",
-      });
+        if (editingCourse) {
+          await updateCourse(editingCourse.id, payload);
+        } else {
+          await createCourse(payload);
+        }
 
-      onCourseCreated();
-    } catch (error) {
-      console.error("Failed to create course:", error);
-      alert("Failed to create course.");
-    }
+        setFormData({
+          code: "",
+          name: "",
+          credits: "",
+          status: "PLANNED",
+          semesterId: "",
+        });
+
+        setEditingCourse(null);
+
+        onCourseCreated();
+      } catch (error) {
+        console.error(error);
+        alert("Failed to save course.");
+      }
   }
 
   return (
     <form onSubmit={handleSubmit}>
-      <h3>Add Course</h3>
+      <h3>
+         {editingCourse ? "Edit Course" : "Add Course"}    
+     </h3>
 
       <input
         type="text"
@@ -101,35 +126,55 @@ function CourseForm({ onCourseCreated }) {
       />
 
       <select
-        name="semesterId"
-        value={formData.semesterId}
-        onChange={handleChange}
-      >
-        <option value="">Select Semester</option>
-
-        {semesters.map((semester) => (
-          <option
-            key={semester.id}
-            value={semester.id}
+            name="status"
+            value={formData.status}
+            onChange={handleChange}
           >
-            {semester.name}
-          </option>
-        ))}
+            <option value="PLANNED">Planned</option>
+            <option value="IN_PROGRESS">In Progress</option>
+            <option value="COMPLETED">Completed</option>
+            <option value="DROPPED">Dropped</option>
       </select>
 
-      <select
-        name="status"
-        value={formData.status}
-        onChange={handleChange}
-      >
-        <option value="planned">Planned</option>
-        <option value="active">Active</option>
-        <option value="completed">Completed</option>
-      </select>
+       <select
+          name="semesterId"
+          value={formData.semesterId}
+          onChange={handleChange}
+        >
+          <option value="">Select Semester</option>
+
+          {semesters.map((semester) => (
+            <option
+              key={semester.id}
+              value={semester.id}
+            >
+              {semester.name}
+            </option>
+          ))}
+       </select>
 
       <button type="submit">
-        Add Course
+        {editingCourse ? "Update Course" : "Add Course"}
       </button>
+
+      {editingCourse && (
+        <button
+          type="button"
+          onClick={() => {
+            setEditingCourse(null);
+
+            setFormData({
+              code: "",
+              name: "",
+              credits: "",
+              status: "PLANNED",
+              semesterId: "",
+            });
+          }}
+        >
+          Cancel
+        </button>
+      )}
     </form>
   );
 }

@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
-
 import { getCourses } from "../api/courseApi";
-
 import CourseTable from "../features/courses/CourseTable";
-
 import CourseForm from "../features/courses/CourseForm";
+import { deleteCourse } from "../api/courseApi";
+
 
 function Courses() {
   const [courses, setCourses] = useState([]);
-
   const [loading, setLoading] = useState(true);
+
+  const [editingCourse, setEditingCourse] = useState(null);
 
   useEffect(() => {
     loadCourses();
@@ -18,12 +18,30 @@ function Courses() {
   async function loadCourses() {
     try {
       const response = await getCourses();
-
       setCourses(response.data);
     } catch (error) {
       console.error("Failed to load courses:", error);
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleDelete(id) {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this course?"
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      await deleteCourse(id);
+
+      await loadCourses();   // <-- notice the await
+    } catch (error) {
+      console.error(error);
+      alert("Failed to delete course.");
     }
   }
 
@@ -36,14 +54,23 @@ function Courses() {
   }
 
   return (
-  <main className="content">
-    <h2>Courses</h2>
+    <main className="content">
+      <h2>Courses</h2>
 
-    <CourseForm onCourseCreated={loadCourses} />
+      <CourseForm
+        onCourseCreated={loadCourses}
+        editingCourse={editingCourse}
+        setEditingCourse={setEditingCourse}
+      />
 
-    <CourseTable courses={courses} />
-  </main>
+      <CourseTable
+        courses={courses}
+        onDelete={handleDelete}
+        onEdit={setEditingCourse}
+      />
+    </main>
   );
 }
+
 
 export default Courses;

@@ -43,3 +43,12 @@ form button {
 form button {
   cursor: pointer;
 }
+
+button {
+  padding: 8px 14px;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.9;
+}
