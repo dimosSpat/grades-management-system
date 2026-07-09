@@ -5,13 +5,13 @@ export const getCourses = async (params = {}) => {
     params,
   });
 
-  return response.data;
+  return response.data.data;
 };
 
 export const createCourse = async (course) => {
   const response = await axios.post("/courses", course);
 
-  return response.data;
+  return response.data.data;
 };
 
 export const updateCourse = async (id, courseData) => {
@@ -20,7 +20,7 @@ export const updateCourse = async (id, courseData) => {
     courseData
   );
 
-  return response.data;
+  return response.data.data;
 };
 
 export const deleteCourse = async (id) => {

@@ -17,8 +17,8 @@ function Courses() {
 
   async function loadCourses() {
     try {
-      const response = await getCourses();
-      setCourses(response.data);
+      const courses = await getCourses();
+      setCourses(courses);
     } catch (error) {
       console.error("Failed to load courses:", error);
     } finally {

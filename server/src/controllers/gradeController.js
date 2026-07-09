@@ -1,13 +1,12 @@
 const { Grade, Course } = require("../models");
 
-
 const getAllGrades = async (req, res, next) => {
   try {
-  const grades = await Grade.findAll({
-    include: ["course"],
-  });
+    const grades = await Grade.findAll({
+      include: ["course"],
+    });
 
-      res.status(201).json(grade);
+    res.status(200).json(grades);
   } catch (error) {
     next(error);
   }
@@ -15,17 +14,17 @@ const getAllGrades = async (req, res, next) => {
 
 const getGradeById = async (req, res, next) => {
   try {
-  const grade = await Grade.findByPk(req.params.id, {
-    include: ["course"],
-  });
-
-  if (!grade) {
-    return res.status(404).json({
-      message: "Grade not found",
+    const grade = await Grade.findByPk(req.params.id, {
+      include: ["course"],
     });
-  }
 
-     res.status(201).json(grade);
+    if (!grade) {
+      return res.status(404).json({
+        message: "Grade not found",
+      });
+    }
+
+    res.status(200).json(grade);
   } catch (error) {
     next(error);
   }
@@ -33,39 +32,39 @@ const getGradeById = async (req, res, next) => {
 
 const createGrade = async (req, res, next) => {
   try {
-  const { value, courseId } = req.body;
+    const { value, courseId } = req.body;
 
-  const course = await Course.findByPk(courseId);
+    const course = await Course.findByPk(courseId);
 
-  if (!course) {
-    return res.status(404).json({
-      message: "Course not found",
+    if (!course) {
+      return res.status(404).json({
+        message: "Course not found",
+      });
+    }
+
+    const existingGrade = await Grade.findOne({
+      where: {
+        courseId,
+      },
     });
-  }
 
-  const existingGrade = await Grade.findOne({
-    where: {
+    if (existingGrade) {
+      return res.status(400).json({
+        message: "This course already has a grade",
+      });
+    }
+
+    const grade = await Grade.create({
+      value,
+      passed: value >= 5,
       courseId,
-    },
-  });
-
-  if (existingGrade) {
-    return res.status(400).json({
-      message: "This course already has a grade",
     });
-  }
 
-  const grade = await Grade.create({
-    value,
-    passed: value >= 5,
-    courseId,
-  });
+    await course.update({
+      status: "COMPLETED",
+    });
 
-  await course.update({
-    status: "COMPLETED",
-  });
-
-      res.status(201).json(grade);
+    res.status(201).json(grade);
   } catch (error) {
     next(error);
   }
@@ -73,22 +72,22 @@ const createGrade = async (req, res, next) => {
 
 const updateGrade = async (req, res, next) => {
   try {
-  const grade = await Grade.findByPk(req.params.id);
+    const grade = await Grade.findByPk(req.params.id);
 
-  if (!grade) {
-    return res.status(404).json({
-      message: "Grade not found",
+    if (!grade) {
+      return res.status(404).json({
+        message: "Grade not found",
+      });
+    }
+
+    const value = req.body.value;
+
+    await grade.update({
+      value,
+      passed: value >= 5,
     });
-  }
 
-  const value = req.body.value;
-
-  await grade.update({
-    value,
-    passed: value >= 5,
-  });
-
-      res.status(201).json(grade);
+    res.status(200).json(grade);
   } catch (error) {
     next(error);
   }
@@ -96,17 +95,17 @@ const updateGrade = async (req, res, next) => {
 
 const deleteGrade = async (req, res, next) => {
   try {
-  const grade = await Grade.findByPk(req.params.id);
+    const grade = await Grade.findByPk(req.params.id);
 
-  if (!grade) {
-    return res.status(404).json({
-      message: "Grade not found",
-    });
-  }
+    if (!grade) {
+      return res.status(404).json({
+        message: "Grade not found",
+      });
+    }
 
-  await grade.destroy();
+    await grade.destroy();
 
-      res.status(201).json(grade);
+    res.status(200).json(grade);
   } catch (error) {
     next(error);
   }
