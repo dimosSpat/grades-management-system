@@ -3,7 +3,7 @@ import { getCourses } from "../api/courseApi";
 import CourseTable from "../features/courses/CourseTable";
 import CourseForm from "../features/courses/CourseForm";
 import { deleteCourse } from "../api/courseApi";
-
+import "../styles/courses.css";
 
 function Courses() {
   const [courses, setCourses] = useState([]);

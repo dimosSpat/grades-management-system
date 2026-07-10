@@ -1,3 +1,4 @@
+import "../styles/semesters.css";
 import { useEffect, useState } from "react";
 import {
   getSemesters,

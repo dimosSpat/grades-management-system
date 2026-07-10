@@ -7,9 +7,11 @@ const semesterRoutes = require("./routes/semesterRoutes");
 const courseRoutes = require("./routes/courseRoutes");
 const gradeRoutes = require("./routes/gradeRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
+const authRoutes = require("./routes/authRoutes");
 
 const errorHandler = require("./middlewares/errorHandler");
 const notFound = require("./middlewares/notFound");
+
 
 const app = express();
 
@@ -27,11 +29,16 @@ app.get("/api/health", (req, res) => {
 });
 
 // Creates path for routes
+app.use("/api/auth", authRoutes);
 app.use("/api/semesters", semesterRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/grades", gradeRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
+
+app.use("/api/courses", courseRoutes);
+app.use("/api/grades", gradeRoutes);
+app.use("/api/semesters", semesterRoutes);
 
 module.exports = app;

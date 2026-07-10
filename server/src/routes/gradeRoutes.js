@@ -12,9 +12,13 @@ const {
 
 const validate = require("../middlewares/validationMiddleware");
 
+const authenticateToken = require("../middlewares/authMiddleware");
+
 const {
   createGradeValidation,
 } = require("../validators/gradeValidator");
+
+router.use(authenticateToken);
 
 router.get("/", getAllGrades);
 

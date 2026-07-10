@@ -1,6 +1,7 @@
 const Semester = require("./Semester");
 const Course = require("./Course");
 const Grade = require("./Grade");
+const User = require("./User");
 
 // Semester -> Course
 
@@ -32,4 +33,5 @@ module.exports = {
   Semester,
   Course,
   Grade,
+  User,
 };

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-
+import "../styles/dashboard.css";
 import { getDashboardStats } from "../api/dashboardApi";
 
 function Dashboard() {

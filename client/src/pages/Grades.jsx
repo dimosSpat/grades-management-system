@@ -1,3 +1,4 @@
+import "../styles/grades.css";
 import { useEffect, useState } from "react";
 import {
   getGrades,

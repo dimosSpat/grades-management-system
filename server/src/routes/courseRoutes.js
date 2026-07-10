@@ -12,9 +12,16 @@ const {
 
 const validate = require("../middlewares/validationMiddleware");
 
+const authenticateToken = require("../middlewares/authMiddleware");
+
 const {
   createCourseValidation,
 } = require("../validators/courseValidator");
+
+router.use(authenticateToken);
+
+// Protect all routes below
+router.use(authenticateToken);
 
 // GET /api/courses/ - Returns all courses 
 router.get("/", getAllCourses);

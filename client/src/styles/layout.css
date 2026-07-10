@@ -45,3 +45,19 @@
   color: #3498db;
   font-weight: bold;
 }
+
+/* logout bottom
+*/
+
+.sidebar-user {
+  margin-top: 40px;
+}
+
+.sidebar-user p {
+  margin-bottom: 10px;
+}
+
+.sidebar-user button {
+  padding: 8px 15px;
+  cursor: pointer;
+}
